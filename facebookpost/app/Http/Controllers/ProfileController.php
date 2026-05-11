@@ -64,61 +64,85 @@ class ProfileController extends Controller
     //         ->with('success', 'Profile Created Successfully');
 
     // }
-public function store(Request $request)
-{
-    $request->validate([
+    public function store(Request $request)
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATION
+        |--------------------------------------------------------------------------
+        */
 
-        'name' => 'required',
-        'email' => 'required|email',
-        'description' => 'required',
-        'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        $request->validate([
+            'name'        => 'required',
+            'email'       => 'required|email',
+            'description' => 'required',
+            'image'       => 'required|image',
+        ]);
 
-    ]);
-
-    $imageName = null;
-
-    if ($request->hasFile('image')) {
+        /*
+        |--------------------------------------------------------------------------
+        | IMAGE UPLOAD
+        |--------------------------------------------------------------------------
+        */
 
         $imageName = time() . '.' . $request->image->extension();
 
-        $request->image->move(public_path('profile_images'), $imageName);
+        $request->image->move(
+            public_path('uploads/profiles'),
+            $imageName
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | SAVE DATABASE
+        |--------------------------------------------------------------------------
+        */
+
+        $profile = Profile::create([
+            'name'        => $request->name,
+            'email'       => $request->email,
+            'description' => $request->description,
+            'image'       => $imageName,
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | FACEBOOK PHOTO UPLOAD
+        |--------------------------------------------------------------------------
+        */
+
+        $response = Http::attach(
+            'source',
+            file_get_contents(
+                public_path('uploads/profiles/' . $imageName)
+            ),
+            $imageName
+        )->post(
+            'https://graph.facebook.com/v19.0/' .
+            env('FACEBOOK_PAGE_ID') .
+            '/photos',
+            [
+                'caption' =>
+                    "New Profile Uploaded\n\n" .
+                    "Name : " . $profile->name . "\n" .
+                    "Email : " . $profile->email . "\n" .
+                    "Description : " . $profile->description,
+
+                'access_token' =>
+                    env('FACEBOOK_PAGE_ACCESS_TOKEN'),
+            ]
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SUCCESS
+        |--------------------------------------------------------------------------
+        */
+
+        return redirect()->route('profiles.index')
+            ->with('success', 'Profile Created Successfully');
     }
-
-    $profile = Profile::create([
-
-        'name' => $request->name,
-        'email' => $request->email,
-        'description' => $request->description,
-        'image' => $imageName,
-
-    ]);
-
-    $imagePath = public_path('profile_images/' . $profile->image);
-
-    Http::attach(
-        'source',
-        file_get_contents($imagePath),
-        $profile->image
-    )->post(
-        'https://graph.facebook.com/' .
-        env('FACEBOOK_PAGE_ID') .
-        '/photos',
-        [
-
-            'caption' =>
-                "🔥 New Profile Added\n\n" .
-                "Name: " . $profile->name . "\n" .
-                "Email: " . $profile->email . "\n" .
-                "Description: " . $profile->description,
-
-            'access_token' =>
-                env('FACEBOOK_PAGE_ACCESS_TOKEN'),
-        ]
-    );
-
-    return redirect()->route('profiles.index')
-        ->with('success', 'Profile Created Successfully');
-}
     public function show($id)
     {
 
