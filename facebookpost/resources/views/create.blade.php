@@ -305,6 +305,22 @@
 
         </div>
 
+        <div class="input-group">
+
+            <label>Upload Profile Video</label>
+
+            <div class="file-box">
+
+                🎥 Choose Profile Video
+
+                <br><br>
+
+            <input type="file" name="videos[]" multiple>
+            
+            </div>
+
+        </div>
+
         <button type="submit">
              Save Profile
         </button>

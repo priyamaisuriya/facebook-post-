@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+
     <title>Edit Profile</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <style>
 
@@ -11,7 +13,7 @@
             margin:0;
             padding:0;
             box-sizing:border-box;
-            font-family:Arial, sans-serif;
+            font-family:Arial,sans-serif;
         }
 
         body{
@@ -21,11 +23,9 @@
             justify-content:center;
             align-items:center;
             padding:20px;
-            position:relative;
             overflow-x:hidden;
+            position:relative;
         }
-
-        /* Background Circles */
 
         .bg1,
         .bg2{
@@ -52,8 +52,6 @@
             opacity:0.4;
         }
 
-        /* Container */
-
         .container{
             width:100%;
             max-width:750px;
@@ -64,51 +62,29 @@
             box-shadow:0 10px 35px rgba(0,0,0,0.08);
             position:relative;
             z-index:1;
-            animation:fadeIn 0.6s ease;
         }
-
-        @keyframes fadeIn{
-            from{
-                opacity:0;
-                transform:translateY(20px);
-            }
-            to{
-                opacity:1;
-                transform:translateY(0);
-            }
-        }
-
-        /* Heading */
 
         h2{
             text-align:center;
-            color:#1e293b;
             margin-bottom:30px;
+            color:#1e293b;
             font-size:34px;
         }
-
-        /* Profile Image */
 
         .profile-preview{
             text-align:center;
             margin-bottom:25px;
         }
 
-        .profile-preview img{
-            width:120px;
-            height:120px;
+        .profile-preview img,
+        .profile-preview video{
+            width:130px;
+            height:130px;
             border-radius:50%;
             object-fit:cover;
             border:5px solid #dbeafe;
             box-shadow:0 5px 20px rgba(0,0,0,0.08);
-            transition:0.3s;
         }
-
-        .profile-preview img:hover{
-            transform:scale(1.05);
-        }
-
-        /* Form */
 
         .form-row{
             display:flex;
@@ -151,29 +127,19 @@
             height:120px;
         }
 
-        /* File Upload */
-
         .file-box{
             border:2px dashed #93c5fd;
             border-radius:15px;
             padding:25px;
             text-align:center;
             background:#eff6ff;
-            transition:0.3s;
-        }
-
-        .file-box:hover{
-            background:#dbeafe;
         }
 
         input[type="file"]{
             border:none;
             background:none;
             margin-top:10px;
-            cursor:pointer;
         }
-
-        /* Buttons */
 
         .btn-group{
             display:flex;
@@ -191,12 +157,6 @@
             font-size:16px;
             font-weight:bold;
             cursor:pointer;
-            transition:0.3s;
-        }
-
-        button:hover{
-            transform:translateY(-2px);
-            box-shadow:0 10px 20px rgba(34,197,94,0.25);
         }
 
         .back-btn{
@@ -208,15 +168,7 @@
             color:white;
             text-decoration:none;
             font-weight:bold;
-            transition:0.3s;
         }
-
-        .back-btn:hover{
-            background:#4f46e5;
-            transform:translateY(-2px);
-        }
-
-        /* Responsive */
 
         @media(max-width:768px){
 
@@ -236,12 +188,12 @@
             h2{
                 font-size:28px;
             }
-
         }
 
     </style>
 
 </head>
+
 <body>
 
 <div class="bg1"></div>
@@ -251,19 +203,37 @@
 
     <h2>✏ Edit Profile</h2>
 
-    <!-- Profile Preview -->
+    <!-- PREVIEW -->
 
     <div class="profile-preview">
 
-        <img src="{{ asset('profile_images/'.$profile->image) }}">
+        @if($profile->image)
+
+            <img
+                src="{{ asset('uploads/profiles/'.$profile->image) }}"
+            >
+
+        @elseif($profile->video)
+
+            <video controls>
+
+                <source
+                    src="{{ asset('uploads/videos/'.$profile->video) }}"
+                    type="video/mp4">
+
+            </video>
+
+        @endif
 
     </div>
 
-    <!-- Form -->
+    <!-- FORM -->
 
-    <form action="{{ route('profiles.update',$profile->id) }}"
-          method="POST"
-          enctype="multipart/form-data">
+    <form
+        action="{{ route('profiles.update',$profile->id) }}"
+        method="POST"
+        enctype="multipart/form-data"
+    >
 
         @csrf
         @method('PUT')
@@ -274,9 +244,11 @@
 
                 <label>Full Name</label>
 
-                <input type="text"
-                       name="name"
-                       value="{{ $profile->name }}">
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ $profile->name }}"
+                >
 
             </div>
 
@@ -284,9 +256,11 @@
 
                 <label>Email Address</label>
 
-                <input type="email"
-                       name="email"
-                       value="{{ $profile->email }}">
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ $profile->email }}"
+                >
 
             </div>
 
@@ -296,38 +270,72 @@
 
             <label>Description</label>
 
-            <textarea name="description">{{ $profile->description }}</textarea>
+            <textarea
+                name="description"
+            >{{ $profile->description }}</textarea>
 
         </div>
 
+        <!-- IMAGE -->
+
         <div class="input-group">
 
-            <label>Change Profile Image</label>
+            <label>Change Images</label>
 
             <div class="file-box">
 
-                📸 Upload New Profile Photo
+                📸 Upload Images
 
                 <br><br>
 
-                <input type="file" name="image">
+                <input
+                    type="file"
+                    name="images[]"
+                    multiple
+                >
 
             </div>
 
         </div>
 
+        <!-- VIDEO -->
+
+        <div class="input-group">
+
+            <label>Change Videos</label>
+
+            <div class="file-box">
+
+                🎥 Upload Videos
+
+                <br><br>
+
+                <input
+                    type="file"
+                    name="videos[]"
+                    multiple
+                >
+
+            </div>
+
+        </div>
+
+        <!-- BUTTONS -->
+
         <div class="btn-group">
 
             <button type="submit">
 
-                 Update Profile
+                Update Profile
 
             </button>
 
-            <a href="{{ route('profiles.index') }}"
-               class="back-btn">
+            <a
+                href="{{ route('profiles.index') }}"
+                class="back-btn"
+            >
 
-               ← Back
+                ← Back
 
             </a>
 

@@ -301,14 +301,43 @@
                         #{{ $profile->id }}
 
                     </td>
+<td style="width:120px; height:120px;">
 
-                    <!-- Image -->
+    @if($profile->image)
 
-                    <td>
+        <img
+            src="{{ asset('uploads/profiles/' . $profile->image) }}"
+            style="
+                width:100px;
+                height:100px;
+                object-fit:cover;
+                border-radius:10px;
+                border:1px solid #ccc;
+            "
+        >
 
-                        <img src="{{ asset('profile_images/'.$profile->image) }}">
+    @elseif($profile->video)
 
-                    </td>
+        <video
+            controls
+            style="
+                width:100px;
+                height:100px;
+                object-fit:cover;
+                border-radius:10px;
+                border:1px solid #ccc;
+            "
+        >
+
+            <source
+                src="{{ asset('uploads/videos/' . $profile->video) }}"
+                type="video/mp4">
+
+        </video>
+
+    @endif
+
+</td>
 
                     <!-- Name -->
 

@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Http;
 
 class ProfileController extends Controller
 {
-
-    // Display All Profiles
+    /*
+    |--------------------------------------------------------------------------
+    | DISPLAY ALL PROFILES
+    |--------------------------------------------------------------------------
+    */
 
     public function index()
     {
@@ -18,54 +21,27 @@ class ProfileController extends Controller
         return view('index', compact('profiles'));
     }
 
-
-    // Create Page
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE PAGE
+    |--------------------------------------------------------------------------
+    */
 
     public function create()
     {
         return view('create');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | STORE PROFILE
+    |--------------------------------------------------------------------------
+    */
 
-    // Store Profile
-
-    // public function store(Request $request)
-    // {
-
-    //     $request->validate([
-
-    //         'name' => 'required',
-    //         'email' => 'required|email',
-    //         'description' => 'required',
-    //         'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-
-    //     ]);
-
-    //     $imageName = null;
-
-    //     if ($request->hasFile('image')) {
-
-    //         $imageName = time() . '.' . $request->image->extension();
-
-    //         $request->image->move(public_path('profile_images'), $imageName);
-
-    //     }
-
-    //     Profile::create([
-
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'description' => $request->description,
-    //         'image' => $imageName,
-
-    //     ]);
-
-    //     return redirect()->route('profiles.index')
-    //         ->with('success', 'Profile Created Successfully');
-
-    // }
-      public function store(Request $request)
+    public function store(Request $request)
     {
+        set_time_limit(0);
+
         /*
         |--------------------------------------------------------------------------
         | VALIDATION
@@ -73,11 +49,19 @@ class ProfileController extends Controller
         */
 
         $request->validate([
+
             'name'        => 'required',
             'email'       => 'required|email',
             'description' => 'required',
-            'images'      => 'required',
-            'images.*'    => 'image',
+
+            'images' => 'required_without:videos',
+            'videos' => 'required_without:images',
+
+            'images.*' =>
+                'image|mimes:jpg,jpeg,png,webp|max:2048',
+
+            'videos.*' =>
+                'mimes:mp4,mov,avi|max:51200',
         ]);
 
         /*
@@ -87,9 +71,11 @@ class ProfileController extends Controller
         */
 
         $profile = Profile::create([
+
             'name'        => $request->name,
             'email'       => $request->email,
             'description' => $request->description,
+
         ]);
 
         /*
@@ -98,45 +84,149 @@ class ProfileController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        foreach ($request->file('images') as $image) {
+        if ($request->hasFile('images')) {
 
-            $imageName = time() . rand(100,999) . '.' .
-                         $image->extension();
+            foreach ($request->file('images') as $image) {
 
-            $image->move(
-                public_path('uploads/profiles'),
-                $imageName
-            );
+                /*
+                |--------------------------------------------------------------------------
+                | IMAGE NAME FIX
+                |--------------------------------------------------------------------------
+                */
 
-            /*
-            |--------------------------------------------------------------------------
-            | FACEBOOK POST
-            |--------------------------------------------------------------------------
-            */
+                $imageName =
+                    time() .
+                    rand(100,999) .
+                    '.' .
+                    $image->getClientOriginalExtension();
 
-            $response = Http::attach(
-                'source',
-                file_get_contents(
+                /*
+                |--------------------------------------------------------------------------
+                | MOVE IMAGE
+                |--------------------------------------------------------------------------
+                */
+
+                $image->move(
+                    public_path('uploads/profiles'),
+                    $imageName
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | SAVE IMAGE DATABASE
+                |--------------------------------------------------------------------------
+                */
+
+                $profile->image = $imageName;
+
+                $profile->save();
+
+                /*
+                |--------------------------------------------------------------------------
+                | FACEBOOK IMAGE POST
+                |--------------------------------------------------------------------------
+                */
+
+                Http::attach(
+                    'source',
+                    file_get_contents(
+                        public_path(
+                            'uploads/profiles/' . $imageName
+                        )
+                    ),
+                    $imageName
+                )->post(
+                    'https://graph.facebook.com/v19.0/' .
+                    env('FACEBOOK_PAGE_ID') .
+                    '/photos',
+                    [
+                        'caption' =>
+                            "New Profile Uploaded\n\n" .
+                            "Name : " . $profile->name . "\n" .
+                            "Email : " . $profile->email . "\n" .
+                            "Description : " . $profile->description,
+
+                        'access_token' =>
+                            env('FACEBOOK_PAGE_ACCESS_TOKEN'),
+                    ]
+                );
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | MULTIPLE VIDEO UPLOAD
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->hasFile('videos')) {
+
+            foreach ($request->file('videos') as $video) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | VIDEO NAME FIX
+                |--------------------------------------------------------------------------
+                */
+
+                $videoName =
+                    time() .
+                    rand(100,999) .
+                    '.' .
+                    $video->getClientOriginalExtension();
+
+                /*
+                |--------------------------------------------------------------------------
+                | MOVE VIDEO
+                |--------------------------------------------------------------------------
+                */
+
+                $video->move(
+                    public_path('uploads/videos'),
+                    $videoName
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | SAVE VIDEO DATABASE
+                |--------------------------------------------------------------------------
+                */
+
+                $profile->video = $videoName;
+
+                $profile->save();
+
+                $videoPath =
                     public_path(
-                        'uploads/profiles/' . $imageName
-                    )
-                ),
-                $imageName
-            )->post(
-                'https://graph.facebook.com/v19.0/' .
-                env('FACEBOOK_PAGE_ID') .
-                '/photos',
-                [
-                    'caption' =>
-                        "New Profile Uploaded\n\n" .
-                        "Name : " . $profile->name . "\n" .
-                        "Email : " . $profile->email . "\n" .
-                        "Description : " . $profile->description,
+                        'uploads/videos/' . $videoName
+                    );
 
-                    'access_token' =>
-                        env('FACEBOOK_PAGE_ACCESS_TOKEN'),
-                ]
-            );
+                /*
+                |--------------------------------------------------------------------------
+                | FACEBOOK VIDEO POST
+                |--------------------------------------------------------------------------
+                */
+
+                Http::timeout(0)
+                    ->attach(
+                        'source',
+                        fopen($videoPath, 'r'),
+                        $videoName
+                    )
+                    ->post(
+                        'https://graph-video.facebook.com/v19.0/' .
+                        env('FACEBOOK_PAGE_ID') .
+                        '/videos',
+                        [
+                            'description' =>
+                                "New Video Uploaded\n\n" .
+                                "Name : " . $profile->name,
+
+                            'access_token' =>
+                                env('FACEBOOK_PAGE_ACCESS_TOKEN'),
+                        ]
+                    );
+            }
         }
 
         /*
@@ -145,110 +235,89 @@ class ProfileController extends Controller
         |--------------------------------------------------------------------------
         */
 
-       return redirect()->route('profiles.index')
-            ->with('success', 'Profile Created Successfully');
+        return redirect()
+            ->route('profiles.index')
+            ->with(
+                'success',
+                'Profile Created Successfully'
+            );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SHOW PROFILE
+    |--------------------------------------------------------------------------
+    */
+
     public function show($id)
     {
-
         $profile = Profile::findOrFail($id);
 
         return view('view', compact('profile'));
-
     }
 
-
-    // Edit Page
+    /*
+    |--------------------------------------------------------------------------
+    | EDIT PAGE
+    |--------------------------------------------------------------------------
+    */
 
     public function edit($id)
     {
-
         $profile = Profile::findOrFail($id);
 
         return view('edit', compact('profile'));
-
     }
 
-
-    // Update Profile
-
-    public function update(Request $request, $id)
-    {
-
-        $profile = Profile::findOrFail($id);
-
-        $request->validate([
-
-            'name' => 'required',
-            'email' => 'required|email',
-            'description' => 'required',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-
-        ]);
-
-        $imageName = $profile->image;
-
-        if ($request->hasFile('image')) {
-
-            // Old Image Delete
-
-            if (
-                $profile->image &&
-                file_exists(public_path('profile_images/' . $profile->image))
-            ) {
-
-                unlink(public_path('profile_images/' . $profile->image));
-
-            }
-
-            // New Image Upload
-
-            $imageName = time() . '.' . $request->image->extension();
-
-            $request->image->move(public_path('profile_images'), $imageName);
-
-        }
-
-        $profile->update([
-
-            'name' => $request->name,
-            'email' => $request->email,
-            'description' => $request->description,
-            'image' => $imageName,
-
-        ]);
-
-        return redirect()->route('profiles.index')
-            ->with('success', 'Profile Updated Successfully');
-
-    }
-
-
-    // Delete Profile
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE PROFILE
+    |--------------------------------------------------------------------------
+    */
 
     public function destroy($id)
     {
-
         $profile = Profile::findOrFail($id);
-
-        // Delete Image
 
         if (
             $profile->image &&
-            file_exists(public_path('profile_images/' . $profile->image))
+            file_exists(
+                public_path(
+                    'uploads/profiles/' . $profile->image
+                )
+            )
         ) {
 
-            unlink(public_path('profile_images/' . $profile->image));
-
+            unlink(
+                public_path(
+                    'uploads/profiles/' . $profile->image
+                )
+            );
         }
 
-        // Delete Data
+        if (
+            $profile->video &&
+            file_exists(
+                public_path(
+                    'uploads/videos/' . $profile->video
+                )
+            )
+        ) {
+
+            unlink(
+                public_path(
+                    'uploads/videos/' . $profile->video
+                )
+            );
+        }
 
         $profile->delete();
 
-        return redirect()->route('profiles.index')
-            ->with('success', 'Profile Deleted Successfully');
-
+        return redirect()
+            ->route('profiles.index')
+            ->with(
+                'success',
+                'Profile Deleted Successfully'
+            );
     }
-
 }
