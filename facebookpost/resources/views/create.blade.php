@@ -292,7 +292,7 @@
 
         <div class="input-group">
 
-            <label>Upload Profile Image</label>
+            <label>Upload Profile Images</label>
 
             <div class="file-box">
 
@@ -300,8 +300,7 @@
 
                 <br><br>
 
-                <input type="file" name="image">
-
+                <input type="file" name="images[]" multiple>
             </div>
 
         </div>
