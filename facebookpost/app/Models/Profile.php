@@ -7,10 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class Profile extends Model
 {
     protected $fillable = [
+
         'name',
         'email',
         'description',
-        'image',
-        'video'
+        'hashtags',
+        'tags',
+        'status',
+        'schedule_time',
+        'images',
+        'videos',
+        'platforms',
+        'facebook_post_id',
+        'facebook_post_url',
+
     ];
 }

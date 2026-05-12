@@ -1,340 +1,914 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Create Profile</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
 
-    <style>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, sans-serif;
-        }
+<title>
+    Create Post
+</title>
 
-        body{
-            background:linear-gradient(135deg,#f1f5ff,#eef7ff);
-            min-height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            padding:20px;
-            overflow-x:hidden;
-            position:relative;
-        }
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
-        /* Background Design */
+<style>
 
-        .bg1,
-        .bg2{
-            position:absolute;
-            border-radius:50%;
-            z-index:0;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
 
-        .bg1{
-            width:320px;
-            height:320px;
-            background:#c7d2fe;
-            top:-100px;
-            left:-100px;
-            opacity:0.4;
-        }
+body{
+    background:
+    linear-gradient(
+        135deg,
+        #0f172a,
+        #1e3a8a,
+        #2563eb
+    );
 
-        .bg2{
-            width:260px;
-            height:260px;
-            background:#bfdbfe;
-            bottom:-80px;
-            right:-80px;
-            opacity:0.4;
-        }
+    min-height:100vh;
+    padding:40px;
+}
 
-        /* Main Container */
+.container{
+    max-width:1400px;
+    margin:auto;
+}
 
-        .container{
-            width:100%;
-            max-width:750px;
-            background:rgba(255,255,255,0.95);
-            backdrop-filter:blur(10px);
-            padding:45px;
-            border-radius:25px;
-            box-shadow:0 10px 35px rgba(0,0,0,0.08);
-            position:relative;
-            z-index:1;
-            animation:fadeIn 0.7s ease;
-        }
+.main-card{
+    background:white;
+    border-radius:35px;
+    overflow:hidden;
+    box-shadow:
+    0 20px 60px rgba(0,0,0,0.25);
+}
 
-        @keyframes fadeIn{
-            from{
-                opacity:0;
-                transform:translateY(30px);
-            }
-            to{
-                opacity:1;
-                transform:translateY(0);
-            }
-        }
+.top-header{
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5,
+        #7c3aed
+    );
 
-        .profile-icon{
-            width:100px;
-            height:100px;
-            margin:auto;
-            border-radius:50%;
-            background:linear-gradient(135deg,#6366f1,#3b82f6);
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            color:white;
-            font-size:42px;
-            box-shadow:0 8px 20px rgba(59,130,246,0.3);
-            margin-bottom:20px;
-        }
+    padding:45px;
+    color:white;
+}
 
-        h2{
-            text-align:center;
-            margin-bottom:30px;
-            color:#1e293b;
-            font-size:34px;
-        }
+.top-header h1{
+    font-size:42px;
+    margin-bottom:10px;
+}
 
-        /* Form Grid */
+.top-header p{
+    opacity:0.9;
+    font-size:18px;
+}
 
-        .form-row{
-            display:flex;
-            gap:20px;
-        }
+.back-btn{
+    display:inline-block;
+    margin-top:25px;
+    background:white;
+    color:#2563eb;
+    text-decoration:none;
+    padding:14px 22px;
+    border-radius:16px;
+    font-weight:bold;
+    transition:0.3s;
+}
 
-        .input-group{
-            width:100%;
-            margin-bottom:22px;
-        }
+.back-btn:hover{
+    transform:translateY(-3px);
+}
 
-        label{
-            display:block;
-            margin-bottom:8px;
-            color:#475569;
-            font-weight:bold;
-            font-size:15px;
-        }
+.content{
+    padding:35px;
+}
 
-        input,
-        textarea{
-            width:100%;
-            padding:15px;
-            border-radius:12px;
-            border:1px solid #dbeafe;
-            outline:none;
-            background:#f8fafc;
-            transition:0.3s;
-            font-size:15px;
-        }
+.grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:30px;
+}
 
-        input:focus,
-        textarea:focus{
-            border-color:#6366f1;
-            background:white;
-            box-shadow:0 0 10px rgba(99,102,241,0.2);
-            transform:scale(1.01);
-        }
+.card{
+    background:#f8fafc;
+    border-radius:30px;
+    padding:30px;
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.05);
+}
 
-        textarea{
-            resize:none;
-            height:120px;
-        }
+.section-title{
+    font-size:30px;
+    font-weight:bold;
+    color:#0f172a;
+    margin-bottom:25px;
+}
 
-        /* File Upload */
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
 
-        .file-box{
-            border:2px dashed #93c5fd;
-            border-radius:15px;
-            padding:30px;
-            text-align:center;
-            background:#eff6ff;
-            transition:0.3s;
-        }
+.input-group{
+    margin-bottom:22px;
+}
 
-        .file-box:hover{
-            background:#dbeafe;
-            transform:scale(1.01);
-        }
+.input-group label{
+    display:block;
+    margin-bottom:10px;
+    font-weight:bold;
+    color:#334155;
+}
 
-        input[type="file"]{
-            border:none;
-            background:none;
-            margin-top:10px;
-            cursor:pointer;
-        }
+.input-group input,
+.input-group textarea,
+.input-group select{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:18px;
+    background:white;
+    border:2px solid #e2e8f0;
+    font-size:16px;
+    transition:0.3s;
+}
 
-        /* Button */
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus{
+    outline:none;
+    border-color:#2563eb;
+    box-shadow:
+    0 0 15px rgba(37,99,235,0.2);
+}
 
-        button{
-            width:100%;
-            padding:16px;
-            border:none;
-            border-radius:14px;
-            background:linear-gradient(135deg,#6366f1,#3b82f6);
-            color:white;
-            font-size:17px;
-            font-weight:bold;
-            cursor:pointer;
-            transition:0.3s;
-            margin-top:10px;
-        }
+textarea{
+    resize:none;
+    min-height:180px;
+}
 
-        button:hover{
-            transform:translateY(-2px);
-            box-shadow:0 10px 20px rgba(59,130,246,0.3);
-        }
+.file-box{
+    border:3px dashed #93c5fd;
+    border-radius:25px;
+    background:#eff6ff;
+    padding:35px;
+    text-align:center;
+    transition:0.3s;
+}
 
-        .back-btn{
-            display:block;
-            text-align:center;
-            margin-top:20px;
-            text-decoration:none;
-            color:#4f46e5;
-            font-weight:bold;
-            transition:0.3s;
-        }
+.file-box:hover{
+    background:#dbeafe;
+}
 
-        .back-btn:hover{
-            color:#1d4ed8;
-        }
+.file-box input{
+    margin-top:15px;
+}
 
-        .small-text{
-            text-align:center;
-            margin-top:15px;
-            color:#64748b;
-            font-size:14px;
-        }
+.preview-gallery{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:18px;
+}
 
-        /* Responsive */
+.preview-gallery img{
+    width:120px;
+    height:120px;
+    object-fit:cover;
+    border-radius:18px;
+}
 
-        @media(max-width:768px){
+.preview-gallery video{
+    width:200px;
+    border-radius:18px;
+}
 
-            .container{
-                padding:30px;
-            }
+.toolbar{
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
 
-            .form-row{
-                flex-direction:column;
-                gap:0;
-            }
+.tool-btn{
+    border:none;
+    background:#2563eb;
+    color:white;
+    padding:12px 18px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+}
 
-            h2{
-                font-size:28px;
-            }
+.tool-btn:hover{
+    transform:scale(1.05);
+}
 
-            .profile-icon{
-                width:80px;
-                height:80px;
-                font-size:34px;
-            }
+.emoji-box{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:25px;
+}
 
-        }
+.emoji{
+    width:55px;
+    height:55px;
+    background:white;
+    border-radius:18px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:28px;
+    cursor:pointer;
+    transition:0.3s;
+    box-shadow:
+    0 5px 15px rgba(0,0,0,0.08);
+}
 
-    </style>
+.emoji:hover{
+    transform:scale(1.1);
+}
+
+.socials{
+    display:flex;
+    gap:20px;
+    margin-top:20px;
+}
+
+.social-btn{
+    flex:1;
+    padding:22px;
+    border-radius:25px;
+    text-align:center;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+    position:relative;
+    transition:0.3s;
+}
+
+.social-btn:hover{
+    transform:translateY(-4px);
+}
+
+.facebook{
+    background:
+    linear-gradient(
+        135deg,
+        #1877f2,
+        #0d5bd7
+    );
+}
+
+.instagram{
+    background:
+    linear-gradient(
+        135deg,
+        #f58529,
+        #dd2a7b,
+        #8134af,
+        #515bd4
+    );
+}
+
+.social-btn input{
+    display:none;
+}
+
+.social-btn:has(input:checked){
+    transform:scale(1.05);
+    box-shadow:
+    0 0 25px rgba(37,99,235,0.4);
+}
+
+.social-btn:has(input:checked)::after{
+    content:"✔";
+    position:absolute;
+    top:10px;
+    right:15px;
+    width:30px;
+    height:30px;
+    background:white;
+    color:black;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.publish-btn{
+    width:100%;
+    border:none;
+    padding:20px;
+    border-radius:22px;
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:25px;
+    transition:0.3s;
+}
+
+.publish-btn:hover{
+    transform:translateY(-4px);
+}
+
+.archive-btn{
+    display:block;
+    margin-top:18px;
+    text-align:center;
+    background:#0f172a;
+    color:white;
+    text-decoration:none;
+    padding:18px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.preview{
+    background:white;
+    border-radius:25px;
+    padding:25px;
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.05);
+}
+
+.preview-top{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.profile{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:#2563eb;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:28px;
+}
+
+.preview-text{
+    white-space:pre-wrap;
+    line-height:1.8;
+    color:#334155;
+}
+
+.preview-actions{
+    display:flex;
+    justify-content:space-between;
+    margin-top:25px;
+    color:#64748b;
+}
+
+.alert{
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:20px;
+    font-weight:bold;
+}
+
+.success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.error{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+@media(max-width:900px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .row{
+        grid-template-columns:1fr;
+    }
+
+    .socials{
+        flex-direction:column;
+    }
+
+    body{
+        padding:20px;
+    }
+
+}
+
+</style>
 
 </head>
-<body>
 
-<div class="bg1"></div>
-<div class="bg2"></div>
+<body>
 
 <div class="container">
 
-    <div class="profile-icon">
-        👤
-    </div>
+<div class="main-card">
 
-    <h2>Create Profile</h2>
+<div class="top-header">
 
-    <form action="{{ route('profiles.store') }}"
-          method="POST"
-          enctype="multipart/form-data">
+<h1>
+    🚀 Social Media Dashboard
+</h1>
 
-        @csrf
+<p>
+    Facebook & Instagram Auto Post Manager
+</p>
 
-        <div class="form-row">
+<a href="{{ route('profiles.index') }}"
+   class="back-btn">
 
-            <div class="input-group">
+    ← Back To Dashboard
 
-                <label>Full Name</label>
-
-                <input type="text"
-                       name="name"
-                       placeholder="Enter your full name">
-
-            </div>
-
-            <div class="input-group">
-
-                <label>Email Address</label>
-
-                <input type="email"
-                       name="email"
-                       placeholder="Enter your email">
-
-            </div>
-
-        </div>
-
-        <div class="input-group">
-
-            <label>Description</label>
-
-            <textarea name="description"
-                      placeholder="Write something about yourself"></textarea>
-
-        </div>
-
-        <div class="input-group">
-
-            <label>Upload Profile Images</label>
-
-            <div class="file-box">
-
-                📸 Choose Profile Photo
-
-                <br><br>
-
-                <input type="file" name="images[]" multiple>
-            </div>
-
-        </div>
-
-        <div class="input-group">
-
-            <label>Upload Profile Video</label>
-
-            <div class="file-box">
-
-                🎥 Choose Profile Video
-
-                <br><br>
-
-            <input type="file" name="videos[]" multiple>
-            
-            </div>
-
-        </div>
-
-        <button type="submit">
-             Save Profile
-        </button>
-
-        <a href="{{ route('profiles.index') }}"
-           class="back-btn">
-
-            ← Back to Profile List
-
-        </a>
-
-    </form>
+</a>
 
 </div>
+
+<div class="content">
+
+@if(session('success'))
+
+<div class="alert success">
+    {{ session('success') }}
+</div>
+
+@endif
+
+@if(session('error'))
+
+<div class="alert error">
+    {{ session('error') }}
+</div>
+
+@endif
+
+@if($errors->any())
+
+<div class="alert error">
+
+    @foreach($errors->all() as $error)
+
+        <div>{{ $error }}</div>
+
+    @endforeach
+
+</div>
+
+@endif
+
+<div class="grid">
+
+<!-- LEFT -->
+
+<div class="card">
+
+<div class="section-title">
+    ✍ Create New Post
+</div>
+
+<form action="{{ route('profiles.store') }}"
+      method="POST"
+      enctype="multipart/form-data">
+
+@csrf
+
+<div class="row">
+
+<div class="input-group">
+
+<label>
+    Full Name
+</label>
+
+<input type="text"
+       name="name"
+       placeholder="Enter Name"
+       required>
+
+</div>
+
+<div class="input-group">
+
+<label>
+    Email Address
+</label>
+
+<input type="email"
+       name="email"
+       placeholder="Enter Email"
+       required>
+
+</div>
+
+</div>
+
+<div class="input-group">
+
+<label>
+    Description
+</label>
+
+<textarea id="caption"
+          name="description"
+          placeholder="Write amazing post..."
+          onkeyup="livePreview()"
+          required></textarea>
+
+</div>
+
+<div class="toolbar">
+
+<button type="button"
+        class="tool-btn"
+        onclick="clearText()">
+
+🗑 Clear
+
+</button>
+
+</div>
+
+<div class="emoji-box">
+
+<div class="emoji" onclick="addEmoji('🔥')">🔥</div>
+<div class="emoji" onclick="addEmoji('😍')">😍</div>
+<div class="emoji" onclick="addEmoji('❤️')">❤️</div>
+<div class="emoji" onclick="addEmoji('🎉')">🎉</div>
+<div class="emoji" onclick="addEmoji('🚀')">🚀</div>
+<div class="emoji" onclick="addEmoji('😎')">😎</div>
+<div class="emoji" onclick="addEmoji('😂')">😂</div>
+<div class="emoji" onclick="addEmoji('💯')">💯</div>
+
+</div>
+
+<div class="row">
+
+<div class="input-group">
+
+<label>
+    Upload Images 📸
+</label>
+
+<div class="file-box">
+
+<h3>
+    📷 Select Images
+</h3>
+
+<br>
+
+<input type="file"
+       id="imageInput"
+       name="images[]"
+       multiple
+       accept="image/*"
+       onchange="previewImages(event)">
+
+</div>
+
+<div id="imagePreview"
+     class="preview-gallery"></div>
+
+</div>
+
+<div class="input-group">
+
+<label>
+    Upload Videos 🎥
+</label>
+
+<div class="file-box">
+
+<h3>
+    🎬 Select Videos
+</h3>
+
+<br>
+
+<input type="file"
+       id="videoInput"
+       name="videos[]"
+       multiple
+       accept="video/*"
+       onchange="previewVideos(event)">
+
+</div>
+
+<div id="videoPreview"
+     class="preview-gallery"></div>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="input-group">
+
+<label>
+    Tag People
+</label>
+
+<input type="text"
+       name="tags"
+       placeholder="@john">
+
+</div>
+
+<div class="input-group">
+
+<label>
+    Hashtags
+</label>
+
+<input type="text"
+       name="hashtags"
+       placeholder="#viral #beauty">
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="input-group">
+
+<label>
+    Post Status
+</label>
+
+<select name="status">
+
+<option value="publish">
+    🚀 Publish
+</option>
+
+<option value="draft">
+    📝 Draft
+</option>
+
+<option value="archive">
+    📦 Archive
+</option>
+
+</select>
+
+</div>
+
+<div class="input-group">
+
+<label>
+    Schedule Time
+</label>
+
+<input type="datetime-local"
+       name="schedule_time">
+
+</div>
+
+</div>
+
+<div class="socials">
+
+<label class="social-btn facebook">
+
+<input type="checkbox"
+       name="platforms[]"
+       value="facebook">
+
+📘 Facebook
+
+</label>
+
+<label class="social-btn instagram">
+
+<input type="checkbox"
+       name="platforms[]"
+       value="instagram">
+
+📸 Instagram
+
+</label>
+
+</div>
+
+<button class="publish-btn">
+
+🚀 Publish Post
+
+</button>
+
+<a href="{{ route('profiles.archive') }}"
+   class="archive-btn">
+
+📦 View Archived Posts
+
+</a>
+
+</form>
+
+</div>
+
+<!-- RIGHT -->
+
+<div class="card">
+
+<div class="section-title">
+    📘 Live Preview
+</div>
+
+<div class="preview">
+
+<div class="preview-top">
+
+<div class="profile">
+    👤
+</div>
+
+<div>
+
+<h3>
+    Skn Studio
+</h3>
+
+<small>
+    Just now · 🌍 Public
+</small>
+
+</div>
+
+</div>
+
+<div id="previewText"
+     class="preview-text">
+
+Your post preview...
+
+</div>
+
+<div class="preview-actions">
+
+<div>👍 Like</div>
+<div>💬 Comment</div>
+<div>↗ Share</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function livePreview()
+{
+    let text =
+        document.getElementById(
+            'caption'
+        ).value;
+
+    document.getElementById(
+        'previewText'
+    ).innerHTML = text;
+}
+
+function addEmoji(emoji)
+{
+    let caption =
+        document.getElementById(
+            'caption'
+        );
+
+    caption.value += emoji;
+
+    livePreview();
+}
+
+function clearText()
+{
+    document.getElementById(
+        'caption'
+    ).value = '';
+
+    document.getElementById(
+        'previewText'
+    ).innerHTML =
+        'Your post preview...';
+}
+
+function previewImages(event)
+{
+    let preview =
+        document.getElementById(
+            'imagePreview'
+        );
+
+    preview.innerHTML = '';
+
+    let files =
+        event.target.files;
+
+    for(let i=0;i<files.length;i++)
+    {
+        let reader =
+            new FileReader();
+
+        reader.onload =
+        function(e)
+        {
+            let img =
+                document.createElement(
+                    'img'
+                );
+
+            img.src =
+                e.target.result;
+
+            preview.appendChild(img);
+        }
+
+        reader.readAsDataURL(
+            files[i]
+        );
+    }
+}
+
+function previewVideos(event)
+{
+    let preview =
+        document.getElementById(
+            'videoPreview'
+        );
+
+    preview.innerHTML = '';
+
+    let files =
+        event.target.files;
+
+    for(let i=0;i<files.length;i++)
+    {
+        let reader =
+            new FileReader();
+
+        reader.onload =
+        function(e)
+        {
+            let video =
+                document.createElement(
+                    'video'
+                );
+
+            video.src =
+                e.target.result;
+
+            video.controls = true;
+
+            preview.appendChild(video);
+        }
+
+        reader.readAsDataURL(
+            files[i]
+        );
+    }
+}
+
+</script>
 
 </body>
 </html>

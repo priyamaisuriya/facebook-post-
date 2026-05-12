@@ -8,56 +8,91 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Welcome
 |--------------------------------------------------------------------------
 */
 
 Route::get('/', function () {
 
-    return view('welcome');
+    return redirect()->route('profiles.index');
 
 });
 
-
 /*
 |--------------------------------------------------------------------------
-| Profile CRUD Routes
+| Profile Routes
 |--------------------------------------------------------------------------
 */
 
-Route::resource('profiles', ProfileController::class);
+Route::get('/profiles', [ProfileController::class, 'index'])
+    ->name('profiles.index');
 
+Route::get('/profiles/create', [ProfileController::class, 'create'])
+    ->name('profiles.create');
+
+Route::post('/profiles/store', [ProfileController::class, 'store'])
+    ->name('profiles.store');
+
+Route::get('/profiles/archive', [ProfileController::class, 'archive'])
+    ->name('profiles.archive');
+
+Route::get('/profiles/{id}', [ProfileController::class, 'show'])
+    ->name('profiles.show');
+
+Route::get('/profiles/{id}/edit', [ProfileController::class, 'edit'])
+    ->name('profiles.edit');
+
+Route::put('/profiles/{id}', [ProfileController::class, 'update'])
+    ->name('profiles.update');
+
+Route::delete('/profiles/{id}', [ProfileController::class, 'destroy'])
+    ->name('profiles.destroy');
 
 /*
 |--------------------------------------------------------------------------
-| Facebook Login Route
+| IMPORTANT FIX
+|--------------------------------------------------------------------------
+| GET method add kari didho
+*/
+
+Route::get('/profiles/{id}/archive', [ProfileController::class, 'archivePost'])
+    ->name('profiles.archive.post');
+
+/*
+|--------------------------------------------------------------------------
+| Facebook Login
 |--------------------------------------------------------------------------
 */
 
 Route::get('/auth/facebook', function () {
 
     return Socialite::driver('facebook')
+
         ->scopes([
+
             'email',
             'pages_show_list',
             'pages_manage_posts',
             'pages_read_engagement'
+
         ])
+
         ->redirect();
 
 });
 
-
 /*
 |--------------------------------------------------------------------------
-| Facebook Callback Route
+| Facebook Callback
 |--------------------------------------------------------------------------
 */
 
 Route::get('/auth/facebook/callback', function () {
 
     $facebookUser = Socialite::driver('facebook')
+
         ->stateless()
+
         ->user();
 
     $user = User::updateOrCreate(
@@ -67,6 +102,7 @@ Route::get('/auth/facebook/callback', function () {
         ],
 
         [
+
             'name' => $facebookUser->name,
 
             'facebook_id' => $facebookUser->id,
@@ -74,6 +110,7 @@ Route::get('/auth/facebook/callback', function () {
             'avatar' => $facebookUser->avatar,
 
             'password' => bcrypt('facebook123'),
+
         ]
 
     );
@@ -84,10 +121,9 @@ Route::get('/auth/facebook/callback', function () {
 
 });
 
-
 /*
 |--------------------------------------------------------------------------
-| Dashboard Route
+| Dashboard
 |--------------------------------------------------------------------------
 */
 
