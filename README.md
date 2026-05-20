@@ -506,6 +506,8 @@ php artisan serve
 php artisan migrate
 
 ngrok http 8000
+
+php artisan schedule:work
 ```
 
 ---
